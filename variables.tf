@@ -4,7 +4,7 @@ variable "subscription_id" {
 
 variable "rg_name" {
   type    = string
-  default = "SPN-KeyVault-Storageacct"
+  default = "terraform-backend"
 }
 
 variable "storage_account" {
@@ -16,7 +16,7 @@ variable "storage_account" {
     access_tier              = string
   })
   default = {
-    name                     = "tfstates"
+    name                     = "terraformstates"
     account_tier             = "Standard"
     account_replication_type = "LRS"
     account_kind             = "StorageV2"
@@ -30,7 +30,7 @@ variable "container" {
     access_type = string
   })
   default = {
-    name        = "spn-keyvault-storageacct"
-    access_type = "private"
+    name        = "remote-backend"
+    access_type = "container"
   }
 }
