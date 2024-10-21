@@ -39,3 +39,38 @@ resource "azurerm_storage_container" "container" {
   storage_account_name  = azurerm_storage_account.storage.name
   container_access_type = var.container.access_type
 }
+
+resource "time_rotating" "monthly" {
+  rotation_days = 30
+}
+
+resource "azuread_application" "terraform" {
+  display_name = "Terraform-SPN"
+  owners       = [data.azuread_client_config.current.object_id]
+}
+
+resource "azuread_application_password" "app_password" {
+  application_id = azuread_application.terraform.id
+  rotate_when_changed = {
+    rotation = time_rotating.monthly.id
+  }
+}
+
+resource "azuread_service_principal" "spn" {
+  client_id                    = azuread_application.terraform.client_id
+  app_role_assignment_required = false
+  owners                       = [data.azuread_client_config.current.object_id]
+}
+
+resource "azuread_service_principal_password" "secret" {
+  service_principal_id = azuread_service_principal.spn.id
+  rotate_when_changed = {
+    rotation = time_rotating.monthly.id
+  }
+}
+
+resource "azurerm_role_assignment" "example" {
+  scope                = data.azurerm_subscription.primary.id
+  role_definition_name = "Contributor"
+  principal_id         = data.azuread_service_principal.spn.object_id
+}
