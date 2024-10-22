@@ -8,16 +8,20 @@ resource "random_id" "rand" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                          = "${var.storage_account.name}${random_id.rand.dec}"
-  resource_group_name           = azurerm_resource_group.rg.name
-  location                      = azurerm_resource_group.rg.location
-  account_tier                  = var.storage_account.account_tier
-  account_replication_type      = var.storage_account.account_replication_type
-  account_kind                  = var.storage_account.account_kind
-  access_tier                   = var.storage_account.access_tier
-  shared_access_key_enabled     = false
-  public_network_access_enabled = true
+  name                            = "${var.storage_account.name}${random_id.rand.dec}"
+  resource_group_name             = azurerm_resource_group.rg.name
+  location                        = azurerm_resource_group.rg.location
+  account_tier                    = var.storage_account.account_tier
+  account_replication_type        = var.storage_account.account_replication_type
+  account_kind                    = var.storage_account.account_kind
+  access_tier                     = var.storage_account.access_tier
+  shared_access_key_enabled       = false
+  public_network_access_enabled   = true
   default_to_oauth_authentication = true
+  network_rules {
+    default_action = "Deny"
+    ip_rules       = [var.mypublic_ip]
+  }
 
   blob_properties {
     delete_retention_policy {

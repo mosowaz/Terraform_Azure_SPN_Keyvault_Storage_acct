@@ -4,7 +4,7 @@ variable "subscription_id" {
 
 variable "rg_name" {
   type    = string
-  default = "terraform-backend"
+  default = "terraform-backend-RG"
 }
 
 variable "storage_account" {
@@ -31,6 +31,10 @@ variable "container" {
   })
   default = {
     name        = "remote-backend"
-    access_type = "container"
+    access_type = "private"
   }
+}
+
+variable "mypublic_ip" {
+  type = string
 }
