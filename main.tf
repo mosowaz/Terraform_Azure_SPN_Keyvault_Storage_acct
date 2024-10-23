@@ -94,10 +94,14 @@ resource "azurerm_key_vault" "vault" {
   ]
 }
 
+# Key vault access policy for current user and new user / service principal
 resource "azurerm_key_vault_access_policy" "access" {
+  for_each = toset([ data.azurerm_client_config.current.object_id, 
+                    data.azuread_service_principal.spn.object_id ])
+
   key_vault_id = azurerm_key_vault.vault.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = data.azuread_service_principal.spn.object_id
+  object_id    = each.value
 
   key_permissions = [
     "Get", "List", "Encrypt", "Decrypt", "Create", "Delete",
@@ -134,5 +138,5 @@ resource "azurerm_key_vault_secret" "secrets" {
   value        = each.value.value
   key_vault_id = azurerm_key_vault.vault.id
 
-  depends_on = [azurerm_key_vault_access_policy.access]
+  depends_on = [azurerm_key_vault_access_policy.access, ]
 }
