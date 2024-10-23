@@ -38,3 +38,8 @@ variable "container" {
 variable "mypublic_ip" {
   type = string
 }
+
+variable "key_vault_name" {
+  default = "my-principal-keyvault"
+}
+
